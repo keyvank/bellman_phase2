@@ -42,7 +42,7 @@ impl Circuit<bls12_381::Scalar> for CubeRoot {
                     .ok_or(SynthesisError::AssignmentMissing)
                     .map(|root| {
                         let mut tmp = root;
-                        tmp.square();
+                        tmp = tmp.square();
                         tmp.mul_assign(&root);
                         tmp
                     })
@@ -77,7 +77,7 @@ fn main() {
 
     let root = bls12_381::Scalar::from(123);
     let mut cube = root;
-    cube.square();
+    cube = cube.square();
     cube.mul_assign(&root);
 
     let proof = bellman::groth16::create_random_proof(
