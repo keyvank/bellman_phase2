@@ -314,9 +314,10 @@ impl<W: Write> Write for HashWriter<W> {
 }
 
 fn hash_to_g2(digest: &[u8]) -> bls12_381::G2Projective {
-    assert!(digest.len() == 32);
-
-    bls12_381::G2Projective::random(&mut ChaChaRng::from_seed(digest.try_into().unwrap()))
+    assert!(digest.len() >= 32);
+    let mut seed = [0u8; 32];
+    seed.copy_from_slice(&digest[..32]);
+    bls12_381::G2Projective::random(&mut ChaChaRng::from_seed(seed))
 }
 
 /// Verify a contribution, given the old parameters and
@@ -1141,4 +1142,14 @@ impl MPCParameters {
             contributions,
         })
     }
+}
+
+pub fn contains_contribution(contributions: &[[u8; 64]], my_contribution: &[u8; 64]) -> bool {
+    for contrib in contributions {
+        if &contrib[..] == &my_contribution[..] {
+            return true;
+        }
+    }
+
+    return false;
 }
