@@ -205,9 +205,10 @@ impl PublicKey {
         let mut g2_repr = <bls12_381::G2Affine as UncompressedEncoding>::Uncompressed::default();
 
         reader.read_exact(g1_repr.as_mut())?;
-        let delta_after =
-            <bls12_381::G1Affine as UncompressedEncoding>::from_uncompressed(&g1_repr).unwrap();
-        //.map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;
+        let delta_after: bls12_381::G1Affine = Option::from(
+            <bls12_381::G1Affine as UncompressedEncoding>::from_uncompressed(&g1_repr),
+        )
+        .ok_or(io::Error::new(io::ErrorKind::InvalidData, "Invalid Data!"))?;
 
         if delta_after.is_identity().into() {
             return Err(io::Error::new(
@@ -217,9 +218,10 @@ impl PublicKey {
         }
 
         reader.read_exact(g1_repr.as_mut())?;
-        let s = <bls12_381::G1Affine as UncompressedEncoding>::from_uncompressed(&g1_repr)
-            //.map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;
-            .unwrap();
+        let s: bls12_381::G1Affine = Option::from(
+            <bls12_381::G1Affine as UncompressedEncoding>::from_uncompressed(&g1_repr),
+        )
+        .ok_or(io::Error::new(io::ErrorKind::InvalidData, "Invalid Data!"))?;
 
         if s.is_identity().into() {
             return Err(io::Error::new(
@@ -229,9 +231,10 @@ impl PublicKey {
         }
 
         reader.read_exact(g1_repr.as_mut())?;
-        let s_delta = <bls12_381::G1Affine as UncompressedEncoding>::from_uncompressed(&g1_repr)
-            //.map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;
-            .unwrap();
+        let s_delta: bls12_381::G1Affine = Option::from(
+            <bls12_381::G1Affine as UncompressedEncoding>::from_uncompressed(&g1_repr),
+        )
+        .ok_or(io::Error::new(io::ErrorKind::InvalidData, "Invalid Data!"))?;
 
         if s_delta.is_identity().into() {
             return Err(io::Error::new(
@@ -241,9 +244,10 @@ impl PublicKey {
         }
 
         reader.read_exact(g2_repr.as_mut())?;
-        let r_delta = <bls12_381::G2Affine as UncompressedEncoding>::from_uncompressed(&g2_repr)
-            //.map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))?;
-            .unwrap();
+        let r_delta: bls12_381::G2Affine = Option::from(
+            <bls12_381::G2Affine as UncompressedEncoding>::from_uncompressed(&g2_repr),
+        )
+        .ok_or(io::Error::new(io::ErrorKind::InvalidData, "Invalid Data!"))?;
 
         if r_delta.is_identity().into() {
             return Err(io::Error::new(
@@ -633,7 +637,6 @@ impl MPCParameters {
             Option::from(
                 <bls12_381::G1Affine as UncompressedEncoding>::from_uncompressed_unchecked(&repr),
             )
-            //.map_err(|e| io::Error::new(io::ErrorKind::InvalidData, e))
             .ok_or(io::Error::new(io::ErrorKind::InvalidData, "Invalid data"))
             .and_then(|e: bls12_381::G1Affine| {
                 if e.is_identity().into() {
